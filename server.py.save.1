@@ -5,18 +5,9 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from prometheus_client import CollectorRegistry, Gauge
 from pyramid.view import view_config
 import insert
-import database
-
-def fetch_mysql():
-	conn = database.createConn()
-        cur = conn.cursor()
-	sql = "SELECT * FROM WHERE "
-	cur.execute(sql)
-
 def __initRegistry():
 	registry = CollectorRegistry()
-	id,temperature,humidity,current = fetch_mysql()
-	gT = Gauge("Temperature", "Temperature Of Solar Panel0", registry=registry)
+	gT = Gauge("Temperature0", "Temperature Of Solar Panel0", registry=registry)
 	gC = Gauge("Current0", "Current Of Solar Panel0", registry=registry)
 	gH = Gauge("Humidity0", "Temperature Of Solar Panel0", registry=registry)
 	return registry , gT,gC,gH
@@ -26,26 +17,28 @@ def prometheus_values(t,c,h,ID):
     gT.set(t)
     gC.set(c)
 
-@view_config(
-	route_name = "expose"	
-)
-def expose_metrics(request):
-	registry = __initRegistry()
-	return Response(generate_latest(registry),
+def metrics_web(registry,gT,gC,gH,t,h,c,ID):
+    gT.set(t)
+    gC.set(c)
+    gH.set(h)    
+    metrics
+    return Response(generate_latest(registry),
                     content_type=CONTENT_TYPE_LATEST)
 
 @view_config(
-        route_name = 'store'
+        route_name = 'xbee'
 )
-def store_metrics(request):
+def store_xbee(request):
 	if 'metric' in request.params and 'value' in request.params and 'ID' in request.params:
-		print request.params['metric']
-		print request.params['value']
-		print request.params['ID']
+#		print request.params['metric']
+#		print request.params['value']
+#		print request.params['ID']
+#                print request.params['time']
 		metric =  request.params['metric']
-      	        value =  int(request.params['value'])
-		ID = int(request.params['ID'])
-		insert.insert(value,metric,ID)
+      	        value =  request.params['value']
+		ID =  request.params['ID']
+        	time =  request.params['time']
+		insert.insert(int(value),metric,int(id),time)
 		return Response(body = "Stored to database",
                     content_type=CONTENT_TYPE_LATEST)
 	else:
@@ -53,8 +46,8 @@ def store_metrics(request):
 
 def config():
 	config = Configurator()
-	config.add_route('expose','/expose_metrics')
-	config.add_route('store','/store_metrics')
+	config.add_route('metrics','/metrics')
+	config.add_route('xbee','/xbee')
 	config.scan()
 	app = config.make_wsgi_app()
 	server = make_server('127.0.0.1', 8000, app)

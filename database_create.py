@@ -1,0 +1,1 @@
+ CREATE TABLE IF NOT EXISTS temperature( ID  SMALLINT,value INT,time TIMESTAMP);

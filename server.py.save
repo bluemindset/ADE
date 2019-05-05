@@ -10,9 +10,9 @@ import database
 def fetch_mysql():
 	conn = database.createConn()
         cur = conn.cursor()
-	sql = "SELECT * FROM WHERE "
+	sql = " SELECT value FROM current INNER JOIN(SELECT id, MAX(time) AS Maxtime FROM current GROUP BY id) toptime  ON current.id = toptime.id  AND current.time = toptime.maxtime;"
 	cur.execute(sql)
-
+	
 def __initRegistry():
 	registry = CollectorRegistry()
 	id,temperature,humidity,current = fetch_mysql()
