@@ -24,7 +24,7 @@ _HUMIDITY = "H"
 
 
 #Enable USB Communication
-ser = serial.Serial('/dev/ttyUSB0', 9600,timeout=.5);
+ser = serial.Serial('/dev/ttyUSB1', 9600,timeout=.5);
 while True:
         incoming = ser.readline().strip()
         searchID =re.search(r'ID(\d*)',incoming,re.I) 

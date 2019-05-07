@@ -6,6 +6,7 @@ from prometheus_client import CollectorRegistry, Gauge
 from pyramid.view import view_config
 import insert
 import database
+import selectQ
 
 def fetch_mysql():
 	conn = database.createConn()
@@ -13,13 +14,16 @@ def fetch_mysql():
 	sql = "SELECT * FROM WHERE "
 	cur.execute(sql)
 
-def __initRegistry():
+def __initRegistry(T,C,H):
 	registry = CollectorRegistry()
-	id,temperature,humidity,current = fetch_mysql()
-	gT = Gauge("Temperature", "Temperature Of Solar Panel0", registry=registry)
-	gC = Gauge("Current0", "Current Of Solar Panel0", registry=registry)
-	gH = Gauge("Humidity0", "Temperature Of Solar Panel0", registry=registry)
-	return registry , gT,gC,gH
+	for temps in T:
+		gT = Gauge("RealT"+str(temps[0]), "Temperature Of Solar Panel", registry=registry)
+	#gC = Gauge("Current", "Current Of Solar Panel0", registry=registry)
+	#gH = Gauge("Humidity", "Temperature Of Solar Panel0", registry=registry)
+		gT.set(temps[1])
+	#gC.set(C)
+	#gH.set(H)
+	return registry 
 
 def prometheus_values(t,c,h,ID):    
     strID = str(ID)
@@ -30,7 +34,9 @@ def prometheus_values(t,c,h,ID):
 	route_name = "expose"	
 )
 def expose_metrics(request):
-	registry = __initRegistry()
+	T,C,H = selectQ.select()
+	print T
+	registry = __initRegistry(T,C,H)
 	return Response(generate_latest(registry),
                     content_type=CONTENT_TYPE_LATEST)
 
@@ -49,8 +55,10 @@ def store_metrics(request):
 		return Response(body = "Stored to database",
                     content_type=CONTENT_TYPE_LATEST)
 	else:
+		print "NO"
 		return Response(body = "Not stored to database")
 
+	return Response(status="OK")
 def config():
 	config = Configurator()
 	config.add_route('expose','/expose_metrics')
