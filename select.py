@@ -7,7 +7,7 @@ def select():
 	sqlCurrent = 'SELECT * FROM current INNER JOIN(SELECT id, MAX(time) AS Maxtime FROM current GROUP BY id) toptime  ON current.id = toptime.id  AND current.time = toptime.maxtime'	
 	sqlTemp = 'SELECT * FROM temperature INNER JOIN(SELECT id, MAX(time) AS Maxtime FROM temperature GROUP BY id) toptime  ON temperature.id = toptime.id  AND temperature.time = toptime.maxtime;'
 	sqlHumidity = 'SELECT * FROM humidity INNER JOIN(SELECT id, MAX(time) AS Maxtime FROM humidity GROUP BY id) toptime  ON humidity.id = toptime.id  AND humidity.time = toptime.maxtime;'
-
+	sqlVoltage = 'SELECT * FROM voltage INNER JOIN(SELECT id, MAX(time) AS Maxtime FROM voltage GROUP BY id) toptime  ON voltage.id = toptime.id  AND voltage.time = toptime.maxtime;'
 	cur.execute(sqlCurrent)
 	current = cur.fetchall()
 
@@ -16,6 +16,11 @@ def select():
 
 	cur.execute(sqlHumidity)
 	humidity = cur.fetchall()
-	
-	return temp,current,humidity 
+
+	cur.execute(sqlVoltage)
+	voltage = cur.fetchall()
+
+	print temp 
+	print temp[0][0]
+	return temp,current,humidity,voltage
 

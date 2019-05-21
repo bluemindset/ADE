@@ -17,9 +17,9 @@ def fetch_mysql():
 def __initRegistry(T,C,H):
 	registry = CollectorRegistry()
 	for temps in T:
-		gT = Gauge("RealT"+str(temps[0]), "Temperature Of Solar Panel", registry=registry)
-	#gC = Gauge("Current", "Current Of Solar Panel0", registry=registry)
-	#gH = Gauge("Humidity", "Temperature Of Solar Panel0", registry=registry)
+		gT = Gauge("Temperature"+str(temps[0]), "Temperature Of Solar Panel: "+str(temps[0]), registry=registry)
+		gC = Gauge("Current"+str(temps[0]), "Current Of Solar Panel"+str(temps[0]), registry=registry)
+		gH = Gauge("Humidity"+str(temps[0]), "Temperature Of Solar Panel0"+str(temps[0]), registry=registry)
 		gT.set(temps[1])
 	#gC.set(C)
 	#gH.set(H)
@@ -29,6 +29,10 @@ def prometheus_values(t,c,h,ID):
     strID = str(ID)
     gT.set(t)
     gC.set(c)
+
+@view_config(route_name = "hello")
+def hello(request):
+	return Response(body = "Hello")
 
 @view_config(
 	route_name = "expose"	
@@ -63,9 +67,10 @@ def config():
 	config = Configurator()
 	config.add_route('expose','/expose_metrics')
 	config.add_route('store','/store_metrics')
+	config.add_route('hello','/hello')
 	config.scan()
 	app = config.make_wsgi_app()
-	server = make_server('127.0.0.1', 8000, app)
+	server = make_server('127.0.0.1', 80, app)
 	return server
 
 def serve():

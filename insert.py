@@ -12,6 +12,8 @@ def insert(value, metric, id):
 		sql = "INSERT INTO humidity (ID,value,time) VALUES (%s, %s, %s)"
 	elif metric == 'T':
 		sql = "INSERT INTO temperature (ID,value,time) VALUES (%s, %s, %s)"
+	elif metric == 'V':
+		sql = "INSERT INTO voltage (ID,value,time) VALUES (%s, %s, %s)"
 	value = (id,value,timestamp)
 	cur.execute(sql,value)
 	conn.commit()
