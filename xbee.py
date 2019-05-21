@@ -24,9 +24,13 @@ _HUMIDITY = "H"
 
 
 #Enable USB Communication
-ser = serial.Serial('/dev/ttyUSB1', 9600,timeout=.5);
+ser = serial.Serial('/dev/ttyUSB0', 9600,timeout=.5);
+
+
+
 while True:
         incoming = ser.readline().strip()
+	ser.write("+++".encode())
         searchID =re.search(r'ID(\d*)',incoming,re.I) 
         searchC = re.search(r'(\d*)'+_CURRENT,incoming,re.I)
         searchT = re.search(r'(\d*)'+_TEMPERATURE,incoming,re.I)
@@ -34,12 +38,12 @@ while True:
         if searchID is not None:
 		ID = int(str(searchID.group(1)))
 		print incoming	
-                if searchT is not None:
-			request.createRequest(int(str(searchT.group(1))),_TEMPERATURE, ID)
-                elif searchH is not None:
-			request.createRequest(int(str(searchH.group(1))),_HUMIDITY, ID)
-                elif searchC is not None:
-                        request.createRequest(int(str(searchC.group(1))),_CURRENT, ID)                
+#                if searchT is not None:
+#			request.createRequest(int(str(searchT.group(1))),_TEMPERATURE, ID)
+#                elif searchH is not None:
+#			request.createRequest(int(str(searchH.group(1))),_HUMIDITY, ID)
+#                elif searchC is not None:
+#                       request.createRequest(int(str(searchC.group(1))),_CURRENT, ID)                
 	time.sleep(0.5)
 
 #Start the server with the prometheus values 
